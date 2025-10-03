@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Feedback de Aulas</title>
+</head>
+<body>
+  <h2>Enviar Feedback</h2>
+  <form id="formFeedback">
+    <label for="professor">Professor:</label>
+    <select id="professor"></select>
+    <br><br>
+    <label for="comentario">Comentário:</label>
+    <textarea id="comentario"></textarea>
+    <br><br>
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    async function carregarProfessores() {
+      const res = await fetch("http://localhost:3000/professores");
+      const professores = await res.json();
+      const select = document.getElementById("professor");
+
+      professores.forEach(p => {
+        let option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = `${p.nome} - ${p.disciplina}`;
+        select.appendChild(option);
+      });
+    }
+
+    document.getElementById("formFeedback").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const professor_id = document.getElementById("professor").value;
+      const comentario = document.getElementById("comentario").value;
+
+      await fetch("http://localhost:3000/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ professor_id, comentario })
+      });
+
+      alert("Feedback enviado com sucesso!");
+    });
+
+    carregarProfessores();
+  </script>
+</body>
+</html>
